@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send Driver Location</title>
+</head>
+<body>
+<h1>Sending Location to Server...</h1>
+
+<script>
+    function sendLocationToServer(lat, lng) {
+        console.log("Sending:", lat, lng);
+
+        fetch('https://13ff-2402-3a80-440a-4000-20be-387b-3222-e608.ngrok-free.app/driver-location/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ lat: lat, lng: lng })
+        })
+            .then(response => response.json())
+            .then(data => console.log("Response from server:", data))
+            .catch(error => console.error("Error sending location:", error));
+    }
+
+    function getAndSendLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                sendLocationToServer(lat, lng);
+            }, error => {
+                console.error("Error getting location:", error);
+            });
+        } else {
+            console.error("Geolocation is not supported by this browser.");
+        }
+    }
+
+    // Send location every second
+    setInterval(getAndSendLocation, 1000);
+</script>
+</body>
+</html>
